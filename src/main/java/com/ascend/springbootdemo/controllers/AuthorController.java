@@ -3,7 +3,10 @@ package com.ascend.springbootdemo.controllers;
 import com.ascend.springbootdemo.entities.Author;
 import com.ascend.springbootdemo.services.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,8 +26,13 @@ public class AuthorController {
     }
 
     @GetMapping("/authors")
-    public List<Author> getAllAuthor() {
-        return authorService.getAllAuthor();
+    public ResponseEntity<List<Author>> getAllAuthor() {
+        return new ResponseEntity<>(authorService.getAllAuthor(), HttpStatus.OK);
+    }
+
+    @PostMapping("/authors")
+    public ResponseEntity<Author> createAuthor(Author author) {
+        return new ResponseEntity<>(authorService.createAuthor(author), HttpStatus.CREATED);
     }
 
 

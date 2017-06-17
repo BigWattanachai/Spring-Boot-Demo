@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -45,7 +46,6 @@ public class AuthorServiceTest {
         author2.setLastName("lastName2");
     }
 
-
     @Test
     public void shouldReturnAuthorWhenGetAllExistingAuthor() throws Exception {
         when(authorRepo.findAll()).thenReturn(Arrays.asList(author1, author2));
@@ -61,5 +61,15 @@ public class AuthorServiceTest {
         Assert.assertThat(authors.getId(), is(id));
         Assert.assertThat(authors.getFirstName(), is(firstName));
         Assert.assertThat(authors.getLastName(), is(lastName));
+    }
+
+    @Test
+    public void shouldReturnAuthorWhenCreateAuthorSuccessfully() throws Exception {
+        when(authorRepo.saveAndFlush(Matchers.any(Author.class))).thenReturn(author1);
+
+        Author author = authorService.createAuthor(author1);
+        assertAuthor(author, 1L, "firstName1", "lastName1");
+
+        verify(authorRepo).saveAndFlush(Matchers.any(Author.class));
     }
 }

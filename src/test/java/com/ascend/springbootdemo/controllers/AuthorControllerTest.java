@@ -2,11 +2,14 @@ package com.ascend.springbootdemo.controllers;
 
 import com.ascend.springbootdemo.entities.Author;
 import com.ascend.springbootdemo.services.AuthorService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -16,6 +19,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -30,6 +34,8 @@ public class AuthorControllerTest {
     private MockMvc mockMvc;
     private Author author1;
     private Author author2;
+
+    private ObjectMapper mapper = new ObjectMapper();
 
     @Before
     public void beforeEach() {
@@ -60,5 +66,20 @@ public class AuthorControllerTest {
                 .andExpect(status().isOk());
 
         verify(authorService).getAllAuthor();
+    }
+
+    @Test
+    public void shouldReturnAuthorWhenCreateAuthorSuccessfully() throws Exception {
+        when(authorService.createAuthor(Matchers.any(Author.class))).thenReturn(author1);
+
+        mockMvc.perform(post("/api/v1/authors")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(author1)))
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.first_name", is("firstName1")))
+                .andExpect(jsonPath("$.last_name", is("lastName1")))
+                .andExpect(status().isCreated());
+
+        verify(authorService).createAuthor(Matchers.any(Author.class));
     }
 }

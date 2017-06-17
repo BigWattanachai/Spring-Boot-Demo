@@ -22,4 +22,8 @@ public class AuthorService {
     public List<Author> getAllAuthor() {
         return authorRepo.findAll();
     }
+
+    public Author createAuthor(Author author) {
+        return authorRepo.saveAndFlush(author);
+    }
 }
