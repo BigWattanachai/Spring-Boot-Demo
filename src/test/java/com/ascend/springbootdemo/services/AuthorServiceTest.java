@@ -1,10 +1,14 @@
 package com.ascend.springbootdemo.services;
 
+import com.ascend.springbootdemo.constants.ErrorMsgEnum;
 import com.ascend.springbootdemo.entities.Author;
+import com.ascend.springbootdemo.exceptions.AuthorNotFoundException;
 import com.ascend.springbootdemo.repositories.AuthorRepo;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -14,6 +18,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -30,6 +37,12 @@ public class AuthorServiceTest {
 
     private Author author1;
     private Author author2;
+    private final String firstName1 = "firstName1";
+    private final String firstName2 = "firstName2";
+    private final String lastName1 = "lastName1";
+    private final String lastName2 = "lastName2";
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
 
     @Before
     public void beforeEach() {
@@ -38,23 +51,12 @@ public class AuthorServiceTest {
 
         author1 = new Author();
         author1.setId(1L);
-        author1.setFirstName("firstName1");
-        author1.setLastName("lastName1");
+        author1.setFirstName(firstName1);
+        author1.setLastName(lastName1);
         author2 = new Author();
         author2.setId(2L);
-        author2.setFirstName("firstName2");
-        author2.setLastName("lastName2");
-    }
-
-    @Test
-    public void shouldReturnAuthorWhenGetAllExistingAuthor() throws Exception {
-        when(authorRepo.findAll()).thenReturn(Arrays.asList(author1, author2));
-
-        List<Author> authors = authorService.getAllAuthor();
-        assertAuthor(authors.get(0), 1L, "firstName1", "lastName1");
-        assertAuthor(authors.get(1), 2L, "firstName2", "lastName2");
-
-        verify(authorRepo).findAll();
+        author2.setFirstName(firstName2);
+        author2.setLastName(lastName2);
     }
 
     private void assertAuthor(Author authors, Long id, String firstName, String lastName) {
@@ -64,12 +66,73 @@ public class AuthorServiceTest {
     }
 
     @Test
+    public void shouldReturnAuthorWhenGetAllExistingAuthor() throws Exception {
+        when(authorRepo.findAll()).thenReturn(Arrays.asList(author1, author2));
+
+        List<Author> authors = authorService.getAllAuthor();
+        assertAuthor(authors.get(0), 1L, firstName1, lastName1);
+        assertAuthor(authors.get(1), 2L, firstName2, lastName2);
+
+        verify(authorRepo).findAll();
+    }
+
+
+    @Test
     public void shouldReturnAuthorWhenCreateAuthorSuccessfully() throws Exception {
         when(authorRepo.saveAndFlush(Matchers.any(Author.class))).thenReturn(author1);
 
         Author author = authorService.createAuthor(author1);
-        assertAuthor(author, 1L, "firstName1", "lastName1");
+        assertAuthor(author, 1L, firstName1, lastName1);
 
         verify(authorRepo).saveAndFlush(Matchers.any(Author.class));
+    }
+
+
+    @Test
+    public void shouldReturnAuthorWhenGetExistingAuthorById() throws Exception {
+        when(authorRepo.getOne(anyLong())).thenReturn(author1);
+
+        Author author = authorService.getAuthorById(1L);
+        assertAuthor(author, 1L, firstName1, lastName1);
+
+        verify(authorRepo).getOne(anyLong());
+    }
+
+    @Test
+    public void shouldThrowNotFoundExceptionWhenGetNotExistingAuthorById() throws Exception {
+        when(authorRepo.findOne(anyLong())).thenReturn(null);
+
+        exception.expect(AuthorNotFoundException.class);
+        exception.expectMessage(String.format(ErrorMsgEnum.AUTHOR_NOT_FOUND.getMsg(), 1));
+        authorService.getAuthorById(1L);
+
+        verify(authorService).getAuthorById(anyLong());
+    }
+
+    @Test
+    public void shouldReturnAuthorWhenDeleteExistingAuthorById() throws Exception {
+        when(authorRepo.getOne(anyLong())).thenReturn(author1);
+        doNothing().when(authorRepo).delete(Matchers.any(Author.class));
+        doNothing().when(authorRepo).flush();
+
+        Author author = authorService.deleteAuthorById(1L);
+        assertAuthor(author, 1L, firstName1, lastName1);
+
+        verify(authorRepo).delete(Matchers.any(Author.class));
+        verify(authorRepo).getOne(anyLong());
+        verify(authorRepo).flush();
+    }
+
+    @Test
+    public void shouldThrowNotFoundExceptionWhenDeleteNotExistingAuthorById() throws Exception {
+        when(authorRepo.findOne(anyLong())).thenReturn(null);
+
+        exception.expect(AuthorNotFoundException.class);
+        exception.expectMessage(String.format(ErrorMsgEnum.AUTHOR_NOT_FOUND.getMsg(), 1));
+        authorService.deleteAuthorById(1L);
+
+        verify(authorService).getAuthorById(anyLong());
+        verify(authorRepo, never()).getOne(anyLong());
+        verify(authorRepo, never()).flush();
     }
 }
