@@ -1,6 +1,7 @@
 package com.ascend.springbootdemo.controllers;
 
 import com.ascend.springbootdemo.entities.Author;
+import com.ascend.springbootdemo.entities.Post;
 import com.ascend.springbootdemo.services.AuthorService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
@@ -22,6 +23,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -36,6 +38,8 @@ public class AuthorControllerTest {
     private MockMvc mockMvc;
     private Author author1;
     private Author author2;
+    private Post post1;
+    private Post post2;
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -43,6 +47,8 @@ public class AuthorControllerTest {
     private final String firstName2 = "firstName2";
     private final String lastName1 = "lastName1";
     private final String lastName2 = "lastName2";
+    private final String content1 = "content1";
+    private final String content2 = "content2";
 
     @Before
     public void beforeEach() {
@@ -57,6 +63,15 @@ public class AuthorControllerTest {
         author2.setId(2L);
         author2.setFirstName(firstName2);
         author2.setLastName(lastName2);
+
+        post1 = new Post();
+        post1.setAuthor(author1);
+        post1.setContent(content1);
+        post1.setId(1L);
+        post2 = new Post();
+        post2.setAuthor(author1);
+        post2.setContent(content2);
+        post2.setId(2L);
     }
 
     @Test
@@ -103,6 +118,24 @@ public class AuthorControllerTest {
         verify(authorService).getAuthorById(anyLong());
     }
 
+
+    @Test
+    public void shouldReturnAuthorWhenUpdateExistingAuthor() throws Exception {
+        Author authorUpdate = new Author();
+        when(authorService.updateAuthor(anyLong(), Matchers.any(Author.class))).thenReturn(author1);
+        author1.setFirstName("updated_first_name");
+        author1.setLastName("updated_last_name");
+        mockMvc.perform(put("/api/v1/authors/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(authorUpdate)))
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.first_name", is("updated_first_name")))
+                .andExpect(jsonPath("$.last_name", is("updated_last_name")))
+                .andExpect(status().isOk());
+
+        verify(authorService).updateAuthor(anyLong(), Matchers.any(Author.class));
+    }
+
     @Test
     public void shouldReturnAuthorWhenDeleteExistingAuthorById() throws Exception {
         when(authorService.deleteAuthorById(anyLong())).thenReturn(author1);
@@ -114,5 +147,19 @@ public class AuthorControllerTest {
                 .andExpect(status().isOk());
 
         verify(authorService).deleteAuthorById(anyLong());
+    }
+
+    @Test
+    public void shouldReturnPostWhenCreatePostSuccessfully() throws Exception {
+        when(authorService.createPost(anyLong(), Matchers.any(Post.class))).thenReturn(post1);
+
+        mockMvc.perform(post("/api/v1/authors/1/posts")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(post1)))
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.content", is(content1)))
+                .andExpect(status().isCreated());
+
+        verify(authorService).createPost(anyLong(), Matchers.any(Post.class));
     }
 }

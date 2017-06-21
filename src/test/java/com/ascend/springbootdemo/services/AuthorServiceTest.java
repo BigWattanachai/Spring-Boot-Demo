@@ -2,8 +2,10 @@ package com.ascend.springbootdemo.services;
 
 import com.ascend.springbootdemo.constants.ErrorMsgEnum;
 import com.ascend.springbootdemo.entities.Author;
+import com.ascend.springbootdemo.entities.Post;
 import com.ascend.springbootdemo.exceptions.AuthorNotFoundException;
 import com.ascend.springbootdemo.repositories.AuthorRepo;
+import com.ascend.springbootdemo.repositories.PostRepo;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -35,19 +37,27 @@ public class AuthorServiceTest {
     @Mock
     private AuthorRepo authorRepo;
 
+    @Mock
+    private PostRepo postRepo;
+
     private Author author1;
     private Author author2;
+    private Post post1;
+    private Post post2;
     private final String firstName1 = "firstName1";
     private final String firstName2 = "firstName2";
     private final String lastName1 = "lastName1";
     private final String lastName2 = "lastName2";
+    private final String content1 = "content1";
+    private final String content2 = "content2";
+
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
     @Before
     public void beforeEach() {
         MockitoAnnotations.initMocks(this);
-        authorService = new AuthorService(authorRepo);
+        authorService = new AuthorService(authorRepo, postRepo);
 
         author1 = new Author();
         author1.setId(1L);
@@ -57,12 +67,27 @@ public class AuthorServiceTest {
         author2.setId(2L);
         author2.setFirstName(firstName2);
         author2.setLastName(lastName2);
+
+        post1 = new Post();
+        post1.setAuthor(author1);
+        post1.setContent(content1);
+        post1.setId(1L);
+        post2 = new Post();
+        post2.setAuthor(author1);
+        post2.setContent(content2);
+        post2.setId(2L);
     }
 
     private void assertAuthor(Author authors, Long id, String firstName, String lastName) {
         Assert.assertThat(authors.getId(), is(id));
         Assert.assertThat(authors.getFirstName(), is(firstName));
         Assert.assertThat(authors.getLastName(), is(lastName));
+    }
+
+    private void assertPost(Post post, Long authorId, Long id, String content) {
+        Assert.assertThat(post.getId(), is(id));
+        Assert.assertThat(post.getAuthor().getId(), is(authorId));
+        Assert.assertThat(post.getContent(), is(content));
     }
 
     @Test
@@ -90,12 +115,12 @@ public class AuthorServiceTest {
 
     @Test
     public void shouldReturnAuthorWhenGetExistingAuthorById() throws Exception {
-        when(authorRepo.getOne(anyLong())).thenReturn(author1);
+        when(authorRepo.findOne(anyLong())).thenReturn(author1);
 
         Author author = authorService.getAuthorById(1L);
         assertAuthor(author, 1L, firstName1, lastName1);
 
-        verify(authorRepo).getOne(anyLong());
+        verify(authorRepo).findOne(anyLong());
     }
 
     @Test
@@ -111,7 +136,7 @@ public class AuthorServiceTest {
 
     @Test
     public void shouldReturnAuthorWhenDeleteExistingAuthorById() throws Exception {
-        when(authorRepo.getOne(anyLong())).thenReturn(author1);
+        when(authorRepo.findOne(anyLong())).thenReturn(author1);
         doNothing().when(authorRepo).delete(Matchers.any(Author.class));
         doNothing().when(authorRepo).flush();
 
@@ -119,7 +144,7 @@ public class AuthorServiceTest {
         assertAuthor(author, 1L, firstName1, lastName1);
 
         verify(authorRepo).delete(Matchers.any(Author.class));
-        verify(authorRepo).getOne(anyLong());
+        verify(authorRepo).findOne(anyLong());
         verify(authorRepo).flush();
     }
 
@@ -132,7 +157,57 @@ public class AuthorServiceTest {
         authorService.deleteAuthorById(1L);
 
         verify(authorService).getAuthorById(anyLong());
-        verify(authorRepo, never()).getOne(anyLong());
+        verify(authorRepo, never()).findOne(anyLong());
         verify(authorRepo, never()).flush();
+    }
+
+    @Test
+    public void shouldReturnAuthorWhenUUpdateExistingAutho() throws Exception {
+        when(authorRepo.findOne(anyLong())).thenReturn(author1);
+        author1.setFirstName("update_first_name");
+        author1.setLastName("update_last_name");
+        when(authorRepo.saveAndFlush(Matchers.any(Author.class))).thenReturn(author1);
+
+        Author author = authorService.updateAuthor(1L, author1);
+        assertAuthor(author, 1L, "update_first_name", "update_last_name");
+
+        verify(authorRepo).findOne(anyLong());
+        verify(authorRepo).saveAndFlush(Matchers.any(Author.class));
+    }
+
+    @Test
+    public void shouldThrowNotFoundExceptionWhenUpdateNotExistingAuthor() throws Exception {
+        when(authorRepo.findOne(anyLong())).thenReturn(null);
+
+        exception.expect(AuthorNotFoundException.class);
+        exception.expectMessage(String.format(ErrorMsgEnum.AUTHOR_NOT_FOUND.getMsg(), 1));
+        authorService.updateAuthor(1L, author1);
+
+        verify(authorService).getAuthorById(anyLong());
+        verify(authorRepo, never()).saveAndFlush(Matchers.any(Author.class));
+    }
+
+    @Test
+    public void shouldReturnPostWhenCreatePostSuccessfully() throws Exception {
+        when(authorRepo.findOne(anyLong())).thenReturn(author1);
+        when(postRepo.saveAndFlush(Matchers.any(Post.class))).thenReturn(post1);
+
+        Post post = authorService.createPost(1L, post1);
+        assertPost(post, 1L, 1L, "content1");
+
+        verify(authorRepo).findOne(anyLong());
+        verify(postRepo).saveAndFlush(Matchers.any(Post.class));
+    }
+
+    @Test
+    public void shouldThrowNotFoundExceptionWhenCreatePostWithNotExistingAuthor() throws Exception {
+        when(authorRepo.findOne(anyLong())).thenReturn(null);
+
+        exception.expect(AuthorNotFoundException.class);
+        exception.expectMessage(String.format(ErrorMsgEnum.AUTHOR_NOT_FOUND.getMsg(), 1));
+        authorService.createPost(1L, post1);
+
+        verify(authorRepo).findOne(anyLong());
+        verify(postRepo, never()).saveAndFlush(Matchers.any(Post.class));
     }
 }
