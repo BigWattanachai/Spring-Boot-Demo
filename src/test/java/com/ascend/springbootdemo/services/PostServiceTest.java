@@ -19,6 +19,7 @@ import org.mockito.MockitoAnnotations;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -68,8 +69,8 @@ public class PostServiceTest {
         post2.setId(2L);
     }
 
-    private void assertPost(Post post, Long authorId, Long id, String content) {
-        Assert.assertThat(post.getId(), is(id));
+    private void assertPost(Post post, Long authorId, Long postId, String content) {
+        Assert.assertThat(post.getId(), is(postId));
         Assert.assertThat(post.getAuthor().getId(), is(authorId));
         Assert.assertThat(post.getContent(), is(content));
     }
@@ -100,10 +101,11 @@ public class PostServiceTest {
 
     @Test
     public void shouldReturnPostWhenGetExistingPostSuccessfully() throws Exception {
+        post1.setId(2L);
         when(postRepo.findOne(anyLong())).thenReturn(post1);
 
-        Post post = postService.getPostById(1L);
-        assertPost(post, 1L, 1L, content1);
+        Post post = postService.getPostById(2L);
+        assertPost(post, 1L, 2L, content1);
 
         verify(postRepo).findOne(anyLong());
     }
@@ -117,5 +119,58 @@ public class PostServiceTest {
         postService.getPostById(1L);
 
         verify(postRepo).findOne(anyLong());
+    }
+
+    @Test
+    public void shouldReturnPostWhenUpdateExistingPost() throws Exception {
+        when(postRepo.findOne(anyLong())).thenReturn(post1);
+        post1.setContent("update_content");
+        when(postRepo.saveAndFlush(Matchers.any(Post.class))).thenReturn(post1);
+
+        Post post = postService.updatePost(1L, post1);
+        assertPost(post, 1L, 1L, "update_content");
+
+        verify(postRepo).findOne(anyLong());
+        verify(postRepo).saveAndFlush(Matchers.any(Post.class));
+    }
+
+    @Test
+    public void shouldThrowPostNotFoundExceptionWhenUpdateNotExistingPost() throws Exception {
+        when(postRepo.findOne(anyLong())).thenReturn(null);
+
+        exception.expect(PostNotFoundException.class);
+        exception.expectMessage(String.format(ErrorMsgEnum.POST_NOT_FOUND.getMsg(), 1));
+        postService.updatePost(1L, post1);
+
+        verify(postRepo).findOne(anyLong());
+        verify(postRepo, never()).saveAndFlush(Matchers.any(Post.class));
+    }
+
+    @Test
+    public void shouldReturnPostWhenDeleteExistingPostSuccessfully() throws Exception {
+        post1.setId(2L);
+        when(postRepo.findOne(anyLong())).thenReturn(post1);
+        doNothing().when(postRepo).delete(Matchers.any(Post.class));
+        doNothing().when(postRepo).flush();
+
+        Post post = postService.deletePostById(2L);
+        assertPost(post, 1L, 2L, content1);
+
+        verify(postRepo).findOne(anyLong());
+        verify(postRepo).delete(Matchers.any(Post.class));
+        verify(postRepo).flush();
+    }
+
+    @Test
+    public void shouldThrowPostNotFoundExceptionWhenDeleteNotExistingPostById() throws Exception {
+        when(postRepo.findOne(anyLong())).thenReturn(null);
+
+        exception.expect(PostNotFoundException.class);
+        exception.expectMessage(String.format(ErrorMsgEnum.POST_NOT_FOUND.getMsg(), 1));
+        postService.deletePostById(1L);
+
+        verify(postRepo).findOne(anyLong());
+        verify(postRepo, never()).delete(Matchers.any(Post.class));
+        verify(postRepo, never()).flush();
     }
 }

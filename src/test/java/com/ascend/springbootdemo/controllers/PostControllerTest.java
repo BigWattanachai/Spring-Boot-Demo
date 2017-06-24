@@ -18,8 +18,10 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -88,5 +90,34 @@ public class PostControllerTest {
                 .andExpect(status().isOk());
 
         verify(postService).getPostById(anyLong());
+    }
+
+    @Test
+    public void shouldReturnPostWhenUpdateExistingPost() throws Exception {
+        Post postUpdate = new Post();
+        postUpdate.setContent("content_update");
+        post1.setContent("content_update");
+        when(postService.updatePost(anyLong(), Matchers.any(Post.class))).thenReturn(post1);
+
+        mockMvc.perform(put("/api/v1/authors/posts/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(postUpdate)))
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.content", is("content_update")))
+                .andExpect(status().isOk());
+
+        verify(postService).updatePost(anyLong(), Matchers.any(Post.class));
+    }
+
+    @Test
+    public void shouldReturnPostWhenDeleteExistingPostSuccessfully() throws Exception {
+        when(postService.deletePostById(anyLong())).thenReturn(post1);
+
+        mockMvc.perform(delete("/api/v1/authors/posts/1"))
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.content", is(content1)))
+                .andExpect(status().isOk());
+
+        verify(postService).deletePostById(anyLong());
     }
 }

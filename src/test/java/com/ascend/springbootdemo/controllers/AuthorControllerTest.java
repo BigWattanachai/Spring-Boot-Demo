@@ -121,9 +121,11 @@ public class AuthorControllerTest {
     @Test
     public void shouldReturnAuthorWhenUpdateExistingAuthor() throws Exception {
         Author authorUpdate = new Author();
-        when(authorService.updateAuthor(anyLong(), Matchers.any(Author.class))).thenReturn(author1);
+        authorUpdate.setFirstName("updated_first_name");
+        authorUpdate.setLastName("updated_last_name");
         author1.setFirstName("updated_first_name");
         author1.setLastName("updated_last_name");
+        when(authorService.updateAuthor(anyLong(), Matchers.any(Author.class))).thenReturn(author1);
         mockMvc.perform(put("/api/v1/authors/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(authorUpdate)))

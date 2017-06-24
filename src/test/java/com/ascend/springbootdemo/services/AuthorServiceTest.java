@@ -107,7 +107,7 @@ public class AuthorServiceTest {
     }
 
     @Test
-    public void shouldThrowNotFoundExceptionWhenGetNotExistingAuthorById() throws Exception {
+    public void shouldThrowAuthorNotFoundExceptionWhenGetNotExistingAuthorById() throws Exception {
         when(authorRepo.findOne(anyLong())).thenReturn(null);
 
         exception.expect(AuthorNotFoundException.class);
@@ -139,13 +139,13 @@ public class AuthorServiceTest {
         exception.expectMessage(String.format(ErrorMsgEnum.AUTHOR_NOT_FOUND.getMsg(), 1));
         authorService.deleteAuthorById(1L);
 
-        verify(authorService).getAuthorById(anyLong());
+        verify(authorRepo).findOne(anyLong());
         verify(authorRepo, never()).findOne(anyLong());
         verify(authorRepo, never()).flush();
     }
 
     @Test
-    public void shouldReturnAuthorWhenUUpdateExistingAutho() throws Exception {
+    public void shouldReturnAuthorWhenUUpdateExistingAuthor() throws Exception {
         when(authorRepo.findOne(anyLong())).thenReturn(author1);
         author1.setFirstName("update_first_name");
         author1.setLastName("update_last_name");
@@ -166,7 +166,7 @@ public class AuthorServiceTest {
         exception.expectMessage(String.format(ErrorMsgEnum.AUTHOR_NOT_FOUND.getMsg(), 1));
         authorService.updateAuthor(1L, author1);
 
-        verify(authorService).getAuthorById(anyLong());
+        verify(authorRepo).findOne(anyLong());
         verify(authorRepo, never()).saveAndFlush(Matchers.any(Author.class));
     }
 }
