@@ -7,7 +7,8 @@ import lombok.Getter;
  */
 @Getter
 public enum ErrorMsgEnum {
-    AUTHOR_NOT_FOUND("Author id %s was not found");
+    AUTHOR_NOT_FOUND("Author id %s was not found"),
+    POST_NOT_FOUND("Post id %s was not found");
     private final String msg;
 
     ErrorMsgEnum(String msg) {

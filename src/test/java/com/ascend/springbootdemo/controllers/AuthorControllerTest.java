@@ -118,7 +118,6 @@ public class AuthorControllerTest {
         verify(authorService).getAuthorById(anyLong());
     }
 
-
     @Test
     public void shouldReturnAuthorWhenUpdateExistingAuthor() throws Exception {
         Author authorUpdate = new Author();
@@ -147,19 +146,5 @@ public class AuthorControllerTest {
                 .andExpect(status().isOk());
 
         verify(authorService).deleteAuthorById(anyLong());
-    }
-
-    @Test
-    public void shouldReturnPostWhenCreatePostSuccessfully() throws Exception {
-        when(authorService.createPost(anyLong(), Matchers.any(Post.class))).thenReturn(post1);
-
-        mockMvc.perform(post("/api/v1/authors/1/posts")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(post1)))
-                .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.content", is(content1)))
-                .andExpect(status().isCreated());
-
-        verify(authorService).createPost(anyLong(), Matchers.any(Post.class));
     }
 }

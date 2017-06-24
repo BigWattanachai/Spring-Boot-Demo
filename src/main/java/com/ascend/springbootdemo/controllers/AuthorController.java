@@ -1,7 +1,6 @@
 package com.ascend.springbootdemo.controllers;
 
 import com.ascend.springbootdemo.entities.Author;
-import com.ascend.springbootdemo.entities.Post;
 import com.ascend.springbootdemo.services.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -53,10 +52,5 @@ public class AuthorController {
     @DeleteMapping("/authors/{id}")
     public ResponseEntity<Author> deleteAuthorById(@PathVariable Long id) {
         return new ResponseEntity<>(authorService.deleteAuthorById(id), HttpStatus.OK);
-    }
-
-    @PostMapping("/authors/{id}/posts")
-    public ResponseEntity<Post> createPost(@PathVariable(value = "id") Long authorId, @RequestBody Post post) {
-        return new ResponseEntity<>(authorService.createPost(authorId, post), HttpStatus.CREATED);
     }
 }
