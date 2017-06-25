@@ -4,10 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
@@ -17,11 +16,9 @@ import javax.persistence.ManyToOne;
 @Data
 @Entity
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class Post {
-    @Id
-    @GeneratedValue
-    private Long id;
+@EqualsAndHashCode(callSuper = false)
 
+public class Post extends BaseEntity {
     private String content;
 
     @ManyToOne

@@ -7,5 +7,4 @@ import com.ascend.springbootdemo.entities.Post;
  */
 public interface PostService extends GenericService<Post> {
     Post create(Long authorId, Post post);
-
 }

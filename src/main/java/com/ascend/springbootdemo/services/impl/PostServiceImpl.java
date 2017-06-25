@@ -57,7 +57,6 @@ public class PostServiceImpl implements PostService {
                 new PostNotFoundException(String.format(ErrorMsgEnum.POST_NOT_FOUND.getMsg(), id)));
         postRepo.delete(post);
         postRepo.flush();
-
         return post;
     }
 }
