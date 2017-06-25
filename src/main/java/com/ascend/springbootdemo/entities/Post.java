@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,6 +18,7 @@ import javax.persistence.ManyToOne;
 @Data
 @Entity
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@ToString(exclude = "author")
 public class Post {
     @Id
     @GeneratedValue
