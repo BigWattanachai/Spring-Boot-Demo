@@ -114,7 +114,7 @@ public class AuthorServiceTest {
         exception.expectMessage(String.format(ErrorMsgEnum.AUTHOR_NOT_FOUND.getMsg(), 1));
         authorService.getAuthorById(1L);
 
-        verify(authorService).getAuthorById(anyLong());
+        verify(authorRepo).findOne(anyLong());
     }
 
     @Test
