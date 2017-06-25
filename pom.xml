@@ -24,6 +24,7 @@
         <java.version>1.8</java.version>
         <lombok.version>1.16.16</lombok.version>
         <cobertura.version>2.7</cobertura.version>
+        <rxjava.version>1.3.0</rxjava.version>
     </properties>
 
     <dependencies>
@@ -47,6 +48,11 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.reactivex</groupId>
+            <artifactId>rxjava</artifactId>
+            <version>${rxjava.version}</version>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
