@@ -17,7 +17,6 @@ public class SpringBootDemoApplication {
     }
 }
 
-
 @Component
 class initCLR implements CommandLineRunner {
 
@@ -26,7 +25,6 @@ class initCLR implements CommandLineRunner {
     public initCLR(AuthorRepo authorRepo) {
         this.authorRepo = authorRepo;
     }
-
 
     @Override
     public void run(String... strings) throws Exception {
@@ -48,8 +46,6 @@ class initCLR implements CommandLineRunner {
         author4.setLastName("lastName4");
 
         authorRepo.save(Arrays.asList(author1, author2, author3, author4));
-
         authorRepo.findAll().forEach(System.out::println);
-
     }
 }
