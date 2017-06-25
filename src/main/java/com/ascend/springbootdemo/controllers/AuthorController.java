@@ -2,7 +2,6 @@ package com.ascend.springbootdemo.controllers;
 
 import com.ascend.springbootdemo.entities.Author;
 import com.ascend.springbootdemo.services.AuthorService;
-import com.ascend.springbootdemo.services.impl.AuthorServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

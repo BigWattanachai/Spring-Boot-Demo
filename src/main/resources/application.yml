@@ -2,7 +2,7 @@ spring:
   application:
     name: spring-boot-demo-application
     version: 0.0.1
-  profiles.active: test
+  profiles.active: local
 
   jackson:
       property-naming-strategy: CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES

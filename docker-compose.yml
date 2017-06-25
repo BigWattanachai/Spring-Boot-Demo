@@ -1,0 +1,18 @@
+mysql-db:
+    container_name: mysql-db
+    image: wangxian/alpine-mysql
+    ports:
+          - "3306:3306"
+    environment:
+          - MYSQL_ROOT_PASSWORD=admin
+          - MYSQL_DATABASE=demo
+          - MYSQL_USER=admin
+          - MYSQL_PASSWORD=admin
+
+tomcat-server:
+    container_name: tomcat-server
+    image: kennisfabriek/tomcat-alpine
+    ports:
+          - "8080:8080"
+    links:
+          - mysql-db:localhost

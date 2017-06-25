@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -17,7 +18,7 @@ import javax.persistence.ManyToOne;
 @Entity
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @EqualsAndHashCode(callSuper = false)
-
+@ToString(exclude = "author", callSuper = true)
 public class Post extends BaseEntity {
     private String content;
 
