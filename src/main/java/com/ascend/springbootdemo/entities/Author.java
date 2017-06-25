@@ -25,6 +25,6 @@ public class Author extends BaseEntity {
 
     private String lastName;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "author", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Post> posts;
 }
