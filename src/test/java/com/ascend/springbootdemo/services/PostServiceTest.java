@@ -7,6 +7,7 @@ import com.ascend.springbootdemo.exceptions.AuthorNotFoundException;
 import com.ascend.springbootdemo.exceptions.PostNotFoundException;
 import com.ascend.springbootdemo.repositories.AuthorRepo;
 import com.ascend.springbootdemo.repositories.PostRepo;
+import com.ascend.springbootdemo.services.impl.PostServiceImpl;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -30,7 +31,7 @@ import static org.mockito.Mockito.when;
 public class PostServiceTest {
 
     @InjectMocks
-    private PostService postService;
+    private PostServiceImpl postService;
 
     @Mock
     private AuthorRepo authorRepo;
@@ -52,7 +53,7 @@ public class PostServiceTest {
     @Before
     public void beforeEach() {
         MockitoAnnotations.initMocks(this);
-        postService = new PostService(authorRepo, postRepo);
+        postService = new PostServiceImpl(authorRepo, postRepo);
 
         author1 = new Author();
         author1.setId(1L);
@@ -76,11 +77,11 @@ public class PostServiceTest {
     }
 
     @Test
-    public void shouldReturnPostWhenCreatePostSuccessfully() throws Exception {
+    public void shouldReturnPostWhencreateSuccessfully() throws Exception {
         when(authorRepo.findOne(anyLong())).thenReturn(author1);
         when(postRepo.saveAndFlush(Matchers.any(Post.class))).thenReturn(post1);
 
-        Post post = postService.createPost(1L, post1);
+        Post post = postService.create(1L, post1);
         assertPost(post, 1L, 1L, content1);
 
         verify(authorRepo).findOne(anyLong());
@@ -88,12 +89,12 @@ public class PostServiceTest {
     }
 
     @Test
-    public void shouldThrowAuthorNotFoundExceptionWhenCreatePostWithNotExistingAuthor() throws Exception {
+    public void shouldThrowAuthorNotFoundExceptionWhencreateWithNotExistingAuthor() throws Exception {
         when(authorRepo.findOne(anyLong())).thenReturn(null);
 
         exception.expect(AuthorNotFoundException.class);
         exception.expectMessage(String.format(ErrorMsgEnum.AUTHOR_NOT_FOUND.getMsg(), 1));
-        postService.createPost(1L, post1);
+        postService.create(1L, post1);
 
         verify(authorRepo).findOne(anyLong());
         verify(postRepo, never()).saveAndFlush(Matchers.any(Post.class));
@@ -104,7 +105,7 @@ public class PostServiceTest {
         post1.setId(2L);
         when(postRepo.findOne(anyLong())).thenReturn(post1);
 
-        Post post = postService.getPostById(2L);
+        Post post = postService.getById(2L);
         assertPost(post, 1L, 2L, content1);
 
         verify(postRepo).findOne(anyLong());
@@ -116,7 +117,7 @@ public class PostServiceTest {
 
         exception.expect(PostNotFoundException.class);
         exception.expectMessage(String.format(ErrorMsgEnum.POST_NOT_FOUND.getMsg(), 1));
-        postService.getPostById(1L);
+        postService.getById(1L);
 
         verify(postRepo).findOne(anyLong());
     }
@@ -127,7 +128,7 @@ public class PostServiceTest {
         post1.setContent("update_content");
         when(postRepo.saveAndFlush(Matchers.any(Post.class))).thenReturn(post1);
 
-        Post post = postService.updatePost(1L, post1);
+        Post post = postService.edit(1L, post1);
         assertPost(post, 1L, 1L, "update_content");
 
         verify(postRepo).findOne(anyLong());
@@ -140,7 +141,7 @@ public class PostServiceTest {
 
         exception.expect(PostNotFoundException.class);
         exception.expectMessage(String.format(ErrorMsgEnum.POST_NOT_FOUND.getMsg(), 1));
-        postService.updatePost(1L, post1);
+        postService.edit(1L, post1);
 
         verify(postRepo).findOne(anyLong());
         verify(postRepo, never()).saveAndFlush(Matchers.any(Post.class));
@@ -153,7 +154,7 @@ public class PostServiceTest {
         doNothing().when(postRepo).delete(Matchers.any(Post.class));
         doNothing().when(postRepo).flush();
 
-        Post post = postService.deletePostById(2L);
+        Post post = postService.delete(2L);
         assertPost(post, 1L, 2L, content1);
 
         verify(postRepo).findOne(anyLong());
@@ -167,7 +168,7 @@ public class PostServiceTest {
 
         exception.expect(PostNotFoundException.class);
         exception.expectMessage(String.format(ErrorMsgEnum.POST_NOT_FOUND.getMsg(), 1));
-        postService.deletePostById(1L);
+        postService.delete(1L);
 
         verify(postRepo).findOne(anyLong());
         verify(postRepo, never()).delete(Matchers.any(Post.class));

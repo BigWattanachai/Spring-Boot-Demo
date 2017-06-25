@@ -2,6 +2,7 @@ package com.ascend.springbootdemo.controllers;
 
 import com.ascend.springbootdemo.entities.Author;
 import com.ascend.springbootdemo.services.AuthorService;
+import com.ascend.springbootdemo.services.impl.AuthorServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,26 +32,26 @@ public class AuthorController {
 
     @GetMapping
     public ResponseEntity<List<Author>> getAllAuthor() {
-        return new ResponseEntity<>(authorService.getAllAuthor(), HttpStatus.OK);
+        return new ResponseEntity<>(authorService.getAll(), HttpStatus.OK);
     }
 
     @PostMapping
     public ResponseEntity<Author> createAuthor(@RequestBody Author author) {
-        return new ResponseEntity<>(authorService.createAuthor(author), HttpStatus.CREATED);
+        return new ResponseEntity<>(authorService.create(author), HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Author> getAuthorById(@PathVariable Long id) {
-        return new ResponseEntity<>(authorService.getAuthorById(id), HttpStatus.OK);
+        return new ResponseEntity<>(authorService.getById(id), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Author> updateAuthor(@PathVariable Long id, @RequestBody Author author) {
-        return new ResponseEntity<>(authorService.updateAuthor(id, author), HttpStatus.OK);
+        return new ResponseEntity<>(authorService.edit(id, author), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Author> deleteAuthorById(@PathVariable Long id) {
-        return new ResponseEntity<>(authorService.deleteAuthorById(id), HttpStatus.OK);
+        return new ResponseEntity<>(authorService.delete(id), HttpStatus.OK);
     }
 }

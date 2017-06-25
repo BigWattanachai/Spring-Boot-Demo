@@ -4,7 +4,7 @@ import com.ascend.springbootdemo.constants.ErrorMsgEnum;
 import com.ascend.springbootdemo.entities.Author;
 import com.ascend.springbootdemo.exceptions.AuthorNotFoundException;
 import com.ascend.springbootdemo.repositories.AuthorRepo;
-import com.ascend.springbootdemo.repositories.PostRepo;
+import com.ascend.springbootdemo.services.impl.AuthorServiceImpl;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -31,13 +31,10 @@ import static org.mockito.Mockito.when;
 public class AuthorServiceTest {
 
     @InjectMocks
-    private AuthorService authorService;
+    private AuthorServiceImpl authorService;
 
     @Mock
     private AuthorRepo authorRepo;
-
-    @Mock
-    private PostRepo postRepo;
 
     private Author author1;
     private Author author2;
@@ -54,7 +51,7 @@ public class AuthorServiceTest {
     @Before
     public void beforeEach() {
         MockitoAnnotations.initMocks(this);
-        authorService = new AuthorService(authorRepo);
+        authorService = new AuthorServiceImpl(authorRepo);
 
         author1 = new Author();
         author1.setId(1L);
@@ -77,7 +74,7 @@ public class AuthorServiceTest {
     public void shouldReturnAuthorWhenGetAllExistingAuthor() throws Exception {
         when(authorRepo.findAll()).thenReturn(Arrays.asList(author1, author2));
 
-        List<Author> authors = authorService.getAllAuthor();
+        List<Author> authors = authorService.getAll();
         assertAuthor(authors.get(0), 1L, firstName1, lastName1);
         assertAuthor(authors.get(1), 2L, firstName2, lastName2);
 
@@ -89,7 +86,7 @@ public class AuthorServiceTest {
     public void shouldReturnAuthorWhenCreateAuthorSuccessfully() throws Exception {
         when(authorRepo.saveAndFlush(Matchers.any(Author.class))).thenReturn(author1);
 
-        Author author = authorService.createAuthor(author1);
+        Author author = authorService.create(author1);
         assertAuthor(author, 1L, firstName1, lastName1);
 
         verify(authorRepo).saveAndFlush(Matchers.any(Author.class));
@@ -100,7 +97,7 @@ public class AuthorServiceTest {
     public void shouldReturnAuthorWhenGetExistingAuthorById() throws Exception {
         when(authorRepo.findOne(anyLong())).thenReturn(author1);
 
-        Author author = authorService.getAuthorById(1L);
+        Author author = authorService.getById(1L);
         assertAuthor(author, 1L, firstName1, lastName1);
 
         verify(authorRepo).findOne(anyLong());
@@ -112,9 +109,9 @@ public class AuthorServiceTest {
 
         exception.expect(AuthorNotFoundException.class);
         exception.expectMessage(String.format(ErrorMsgEnum.AUTHOR_NOT_FOUND.getMsg(), 1));
-        authorService.getAuthorById(1L);
+        authorService.getById(1L);
 
-        verify(authorService).getAuthorById(anyLong());
+        verify(authorRepo).findOne(anyLong());
     }
 
     @Test
@@ -123,7 +120,7 @@ public class AuthorServiceTest {
         doNothing().when(authorRepo).delete(Matchers.any(Author.class));
         doNothing().when(authorRepo).flush();
 
-        Author author = authorService.deleteAuthorById(1L);
+        Author author = authorService.delete(1L);
         assertAuthor(author, 1L, firstName1, lastName1);
 
         verify(authorRepo).delete(Matchers.any(Author.class));
@@ -137,7 +134,7 @@ public class AuthorServiceTest {
 
         exception.expect(AuthorNotFoundException.class);
         exception.expectMessage(String.format(ErrorMsgEnum.AUTHOR_NOT_FOUND.getMsg(), 1));
-        authorService.deleteAuthorById(1L);
+        authorService.delete(1L);
 
         verify(authorRepo).findOne(anyLong());
         verify(authorRepo, never()).findOne(anyLong());
@@ -151,7 +148,7 @@ public class AuthorServiceTest {
         author1.setLastName("update_last_name");
         when(authorRepo.saveAndFlush(Matchers.any(Author.class))).thenReturn(author1);
 
-        Author author = authorService.updateAuthor(1L, author1);
+        Author author = authorService.edit(1L, author1);
         assertAuthor(author, 1L, "update_first_name", "update_last_name");
 
         verify(authorRepo).findOne(anyLong());
@@ -164,7 +161,7 @@ public class AuthorServiceTest {
 
         exception.expect(AuthorNotFoundException.class);
         exception.expectMessage(String.format(ErrorMsgEnum.AUTHOR_NOT_FOUND.getMsg(), 1));
-        authorService.updateAuthor(1L, author1);
+        authorService.edit(1L, author1);
 
         verify(authorRepo).findOne(anyLong());
         verify(authorRepo, never()).saveAndFlush(Matchers.any(Author.class));

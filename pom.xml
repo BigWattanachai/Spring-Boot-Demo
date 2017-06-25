@@ -82,6 +82,7 @@
                         <excludes>
                             <exclude>com/ascend/springbootdemo/SpringBootDemoApplication*</exclude>
                             <exclude>com/ascend/springbootdemo/entities/**</exclude>
+                            <exclude>com/ascend/springbootdemo/exceptions/**</exclude>
                             <exclude>com/ascend/springbootdemo/repositories/**</exclude>
                             <exclude>com/ascend/springbootdemo/controllers/GlobalControllerExceptionHandler*</exclude>
                         </excludes>

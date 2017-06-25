@@ -29,22 +29,22 @@ public class PostController {
 
     @PostMapping("/authors/{id}/posts")
     public ResponseEntity<Post> createPost(@PathVariable(value = "id") Long authorId, @RequestBody Post post) {
-        return new ResponseEntity<>(postService.createPost(authorId, post), HttpStatus.CREATED);
+        return new ResponseEntity<>(postService.create(authorId, post), HttpStatus.CREATED);
     }
 
     @GetMapping("/authors/posts/{id}")
     public ResponseEntity<Post> getPost(@PathVariable(value = "id") Long id) {
-        return new ResponseEntity<>(postService.getPostById(id), HttpStatus.OK);
+        return new ResponseEntity<>(postService.getById(id), HttpStatus.OK);
     }
 
     @PutMapping("/authors/posts/{id}")
     public ResponseEntity<Post> updatePost(@PathVariable Long id, @RequestBody Post post) {
-        return new ResponseEntity<>(postService.updatePost(id, post), HttpStatus.OK);
+        return new ResponseEntity<>(postService.edit(id, post), HttpStatus.OK);
     }
 
     @DeleteMapping("/authors/posts/{id}")
     public ResponseEntity<Post> deletePost(@PathVariable(value = "id") Long id) {
-        return new ResponseEntity<>(postService.deletePostById(id), HttpStatus.OK);
+        return new ResponseEntity<>(postService.delete(id), HttpStatus.OK);
     }
 
 }

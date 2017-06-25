@@ -3,6 +3,7 @@ package com.ascend.springbootdemo.controllers;
 import com.ascend.springbootdemo.entities.Author;
 import com.ascend.springbootdemo.entities.Post;
 import com.ascend.springbootdemo.services.AuthorService;
+import com.ascend.springbootdemo.services.impl.AuthorServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +35,7 @@ public class AuthorControllerTest {
     @InjectMocks
     private AuthorController controller;
     @Mock
-    private AuthorService authorService;
+    private AuthorServiceImpl authorService;
     private MockMvc mockMvc;
     private Author author1;
     private Author author2;
@@ -76,7 +77,7 @@ public class AuthorControllerTest {
 
     @Test
     public void shouldReturnAuthorWhenGetAllExistingAuthor() throws Exception {
-        when(authorService.getAllAuthor()).thenReturn(Arrays.asList(author1, author2));
+        when(authorService.getAll()).thenReturn(Arrays.asList(author1, author2));
 
         mockMvc.perform(get("/api/v1/authors"))
                 .andExpect(jsonPath("$[0].id", is(1)))
@@ -87,12 +88,12 @@ public class AuthorControllerTest {
                 .andExpect(jsonPath("$[1].last_name", is(lastName2)))
                 .andExpect(status().isOk());
 
-        verify(authorService).getAllAuthor();
+        verify(authorService).getAll();
     }
 
     @Test
-    public void shouldReturnAuthorWhenCreateAuthorSuccessfully() throws Exception {
-        when(authorService.createAuthor(Matchers.any(Author.class))).thenReturn(author1);
+    public void shouldReturnAuthorWhencreateSuccessfully() throws Exception {
+        when(authorService.create(Matchers.any(Author.class))).thenReturn(author1);
 
         mockMvc.perform(post("/api/v1/authors")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -102,12 +103,12 @@ public class AuthorControllerTest {
                 .andExpect(jsonPath("$.last_name", is(lastName1)))
                 .andExpect(status().isCreated());
 
-        verify(authorService).createAuthor(Matchers.any(Author.class));
+        verify(authorService).create(Matchers.any(Author.class));
     }
 
     @Test
     public void shouldReturnAuthorWhenGetExistingAuthorById() throws Exception {
-        when(authorService.getAuthorById(anyLong())).thenReturn(author1);
+        when(authorService.getById(anyLong())).thenReturn(author1);
 
         mockMvc.perform(get("/api/v1/authors/1"))
                 .andExpect(jsonPath("$.id", is(1)))
@@ -115,7 +116,7 @@ public class AuthorControllerTest {
                 .andExpect(jsonPath("$.last_name", is(lastName1)))
                 .andExpect(status().isOk());
 
-        verify(authorService).getAuthorById(anyLong());
+        verify(authorService).getById(anyLong());
     }
 
     @Test
@@ -125,7 +126,7 @@ public class AuthorControllerTest {
         authorUpdate.setLastName("updated_last_name");
         author1.setFirstName("updated_first_name");
         author1.setLastName("updated_last_name");
-        when(authorService.updateAuthor(anyLong(), Matchers.any(Author.class))).thenReturn(author1);
+        when(authorService.edit(anyLong(), Matchers.any(Author.class))).thenReturn(author1);
         mockMvc.perform(put("/api/v1/authors/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(authorUpdate)))
@@ -134,12 +135,12 @@ public class AuthorControllerTest {
                 .andExpect(jsonPath("$.last_name", is("updated_last_name")))
                 .andExpect(status().isOk());
 
-        verify(authorService).updateAuthor(anyLong(), Matchers.any(Author.class));
+        verify(authorService).edit(anyLong(), Matchers.any(Author.class));
     }
 
     @Test
     public void shouldReturnAuthorWhenDeleteExistingAuthorById() throws Exception {
-        when(authorService.deleteAuthorById(anyLong())).thenReturn(author1);
+        when(authorService.delete(anyLong())).thenReturn(author1);
 
         mockMvc.perform(delete("/api/v1/authors/1"))
                 .andExpect(jsonPath("$.id", is(1)))
@@ -147,6 +148,6 @@ public class AuthorControllerTest {
                 .andExpect(jsonPath("$.last_name", is(lastName1)))
                 .andExpect(status().isOk());
 
-        verify(authorService).deleteAuthorById(anyLong());
+        verify(authorService).delete(anyLong());
     }
 }

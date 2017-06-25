@@ -2,7 +2,7 @@ package com.ascend.springbootdemo.controllers;
 
 import com.ascend.springbootdemo.entities.Author;
 import com.ascend.springbootdemo.entities.Post;
-import com.ascend.springbootdemo.services.PostService;
+import com.ascend.springbootdemo.services.impl.PostServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +32,7 @@ public class PostControllerTest {
     @InjectMocks
     private PostController controller;
     @Mock
-    private PostService postService;
+    private PostServiceImpl postService;
     private MockMvc mockMvc;
     private Author author1;
     private Author author2;
@@ -67,8 +67,8 @@ public class PostControllerTest {
     }
 
     @Test
-    public void shouldReturnPostWhenCreatePostSuccessfully() throws Exception {
-        when(postService.createPost(anyLong(), Matchers.any(Post.class))).thenReturn(post1);
+    public void shouldReturnPostWhencreateSuccessfully() throws Exception {
+        when(postService.create(anyLong(), Matchers.any(Post.class))).thenReturn(post1);
 
         mockMvc.perform(post("/api/v1/authors/1/posts")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -77,19 +77,19 @@ public class PostControllerTest {
                 .andExpect(jsonPath("$.content", is(content1)))
                 .andExpect(status().isCreated());
 
-        verify(postService).createPost(anyLong(), Matchers.any(Post.class));
+        verify(postService).create(anyLong(), Matchers.any(Post.class));
     }
 
     @Test
     public void shouldReturnPostWhenGetExistingPostSuccessfully() throws Exception {
-        when(postService.getPostById(anyLong())).thenReturn(post1);
+        when(postService.getById(anyLong())).thenReturn(post1);
 
         mockMvc.perform(get("/api/v1/authors/posts/1"))
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.content", is(content1)))
                 .andExpect(status().isOk());
 
-        verify(postService).getPostById(anyLong());
+        verify(postService).getById(anyLong());
     }
 
     @Test
@@ -97,7 +97,7 @@ public class PostControllerTest {
         Post postUpdate = new Post();
         postUpdate.setContent("content_update");
         post1.setContent("content_update");
-        when(postService.updatePost(anyLong(), Matchers.any(Post.class))).thenReturn(post1);
+        when(postService.edit(anyLong(), Matchers.any(Post.class))).thenReturn(post1);
 
         mockMvc.perform(put("/api/v1/authors/posts/1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -106,18 +106,18 @@ public class PostControllerTest {
                 .andExpect(jsonPath("$.content", is("content_update")))
                 .andExpect(status().isOk());
 
-        verify(postService).updatePost(anyLong(), Matchers.any(Post.class));
+        verify(postService).edit(anyLong(), Matchers.any(Post.class));
     }
 
     @Test
     public void shouldReturnPostWhenDeleteExistingPostSuccessfully() throws Exception {
-        when(postService.deletePostById(anyLong())).thenReturn(post1);
+        when(postService.delete(anyLong())).thenReturn(post1);
 
         mockMvc.perform(delete("/api/v1/authors/posts/1"))
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.content", is(content1)))
                 .andExpect(status().isOk());
 
-        verify(postService).deletePostById(anyLong());
+        verify(postService).delete(anyLong());
     }
 }
