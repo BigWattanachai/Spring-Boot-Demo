@@ -1,6 +1,7 @@
 package com.ascend.springbootdemo.controllers;
 
 import com.ascend.springbootdemo.exceptions.AuthorNotFoundException;
+import com.ascend.springbootdemo.exceptions.PostNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,8 +16,15 @@ import java.io.IOException;
 @ControllerAdvice
 public class GlobalControllerExceptionHandler {
     @ExceptionHandler
-    public void handleTodoException(AuthorNotFoundException exception,
-                                    HttpServletResponse response) throws IOException {
+    public void handleAuthorNotFoundException(AuthorNotFoundException exception,
+                                              HttpServletResponse response) throws IOException {
+        response.sendError(HttpStatus.NOT_FOUND.value(), exception.getMessage());
+    }
+
+
+    @ExceptionHandler
+    public void handlePostNotFoundException(PostNotFoundException exception,
+                                            HttpServletResponse response) throws IOException {
         response.sendError(HttpStatus.NOT_FOUND.value(), exception.getMessage());
     }
 }
