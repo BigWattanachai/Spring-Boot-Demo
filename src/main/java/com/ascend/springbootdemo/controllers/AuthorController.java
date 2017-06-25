@@ -20,7 +20,7 @@ import java.util.List;
  * Created by BiG on 6/17/2017 AD.
  */
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/authors")
 public class AuthorController {
     private AuthorService authorService;
 
@@ -29,27 +29,27 @@ public class AuthorController {
         this.authorService = authorService;
     }
 
-    @GetMapping("/authors")
+    @GetMapping
     public ResponseEntity<List<Author>> getAllAuthor() {
         return new ResponseEntity<>(authorService.getAllAuthor(), HttpStatus.OK);
     }
 
-    @PostMapping("/authors")
+    @PostMapping
     public ResponseEntity<Author> createAuthor(@RequestBody Author author) {
         return new ResponseEntity<>(authorService.createAuthor(author), HttpStatus.CREATED);
     }
 
-    @GetMapping("/authors/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Author> getAuthorById(@PathVariable Long id) {
         return new ResponseEntity<>(authorService.getAuthorById(id), HttpStatus.OK);
     }
 
-    @PutMapping("/authors/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Author> updateAuthor(@PathVariable Long id, @RequestBody Author author) {
         return new ResponseEntity<>(authorService.updateAuthor(id, author), HttpStatus.OK);
     }
 
-    @DeleteMapping("/authors/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Author> deleteAuthorById(@PathVariable Long id) {
         return new ResponseEntity<>(authorService.deleteAuthorById(id), HttpStatus.OK);
     }
