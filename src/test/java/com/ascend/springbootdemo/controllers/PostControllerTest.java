@@ -51,7 +51,6 @@ public class PostControllerTest {
         Author author2 = new Author();
         author2.setId(2L);
 
-
         post1 = new Post();
         post1.setAuthor(author1);
         post1.setContent(content1);
