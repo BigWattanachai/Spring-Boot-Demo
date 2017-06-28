@@ -2,7 +2,6 @@ package com.ascend.springbootdemo.controllers;
 
 import com.ascend.springbootdemo.entities.Author;
 import com.ascend.springbootdemo.entities.Post;
-import com.ascend.springbootdemo.services.AuthorService;
 import com.ascend.springbootdemo.services.impl.AuthorServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
