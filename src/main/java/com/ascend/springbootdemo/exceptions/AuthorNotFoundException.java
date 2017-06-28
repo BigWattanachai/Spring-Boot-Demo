@@ -9,7 +9,4 @@ public class AuthorNotFoundException extends RuntimeException {
         super(message);
     }
 
-    public AuthorNotFoundException() {
-        this("Author Not Found");
-    }
 }
