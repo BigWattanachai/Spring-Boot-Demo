@@ -36,9 +36,6 @@ public class AuthorServiceTest {
     @Mock
     private AuthorRepo authorRepo;
 
-    @Mock
-    private PostRepo postRepo;
-
     private Author author1;
     private Author author2;
 

@@ -34,25 +34,21 @@ public class PostControllerTest {
     @Mock
     private PostService postService;
     private MockMvc mockMvc;
-    private Author author1;
-    private Author author2;
     private Post post1;
-    private Post post2;
 
     private ObjectMapper mapper = new ObjectMapper();
 
     private final String content1 = "content1";
-    private final String content2 = "content2";
 
     @Before
     public void beforeEach() {
         MockitoAnnotations.initMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
 
-        author1 = new Author();
+        Author author1 = new Author();
         author1.setId(1L);
 
-        author2 = new Author();
+        Author author2 = new Author();
         author2.setId(2L);
 
 
@@ -60,10 +56,6 @@ public class PostControllerTest {
         post1.setAuthor(author1);
         post1.setContent(content1);
         post1.setId(1L);
-        post2 = new Post();
-        post2.setAuthor(author1);
-        post2.setContent(content2);
-        post2.setId(2L);
     }
 
     @Test

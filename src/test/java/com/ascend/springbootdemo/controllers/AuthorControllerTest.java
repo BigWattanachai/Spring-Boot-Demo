@@ -1,7 +1,6 @@
 package com.ascend.springbootdemo.controllers;
 
 import com.ascend.springbootdemo.entities.Author;
-import com.ascend.springbootdemo.entities.Post;
 import com.ascend.springbootdemo.services.AuthorService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
@@ -38,8 +37,7 @@ public class AuthorControllerTest {
     private MockMvc mockMvc;
     private Author author1;
     private Author author2;
-    private Post post1;
-    private Post post2;
+
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -47,8 +45,7 @@ public class AuthorControllerTest {
     private final String firstName2 = "firstName2";
     private final String lastName1 = "lastName1";
     private final String lastName2 = "lastName2";
-    private final String content1 = "content1";
-    private final String content2 = "content2";
+
 
     @Before
     public void beforeEach() {
@@ -64,14 +61,6 @@ public class AuthorControllerTest {
         author2.setFirstName(firstName2);
         author2.setLastName(lastName2);
 
-        post1 = new Post();
-        post1.setAuthor(author1);
-        post1.setContent(content1);
-        post1.setId(1L);
-        post2 = new Post();
-        post2.setAuthor(author1);
-        post2.setContent(content2);
-        post2.setId(2L);
     }
 
     @Test
