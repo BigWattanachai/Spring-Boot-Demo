@@ -14,7 +14,7 @@ import java.io.IOException;
  */
 
 @ControllerAdvice
-public class GlobalControllerExceptionHandler {
+public class GlobalExceptionControllerAdvice {
     @ExceptionHandler
     public void handleAuthorNotFoundException(AuthorNotFoundException exception,
                                               HttpServletResponse response) throws IOException {
